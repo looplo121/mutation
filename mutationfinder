@@ -1,0 +1,226 @@
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+
+-- 💎 Super Premium Dark Pet Mutation Finder GUI by Kuni (Styled Match)
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+local Workspace = game:GetService("Workspace")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local mutations = {
+	"Shiny", "Inverted", "Frozen", "Windy", "Golden", "Mega", "Tiny",
+	"Tranquil", "IronSkin", "Radiant", "Rainbow", "Shocked", "Ascended"
+}
+local currentMutation = mutations[math.random(#mutations)]
+local espVisible = true
+
+-- 🖥️ GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "PetMutationFinder"
+gui.ResetOnSpawn = false
+gui.Parent = PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 270, 0, 230)
+frame.Position = UDim2.new(0.4, 0, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 14)
+local stroke = Instance.new("UIStroke", frame)
+stroke.Color = Color3.fromRGB(60, 60, 70)
+stroke.Thickness = 1.5
+
+-- 🏷️ Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Text = "Pet Mutation Finder v2"
+title.TextColor3 = Color3.fromRGB(220, 220, 255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.FredokaOne
+title.TextSize = 22
+
+-- ❌ Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -38, 0, 6)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+closeBtn.Text = "✕"
+closeBtn.Font = Enum.Font.FredokaOne
+closeBtn.TextSize = 16
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+closeBtn.AutoButtonColor = false
+closeBtn.Parent = frame
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UIStroke", closeBtn).Color = Color3.fromRGB(180, 60, 60)
+
+closeBtn.MouseEnter:Connect(function()
+	TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 110, 110)}):Play()
+end)
+closeBtn.MouseLeave:Connect(function()
+	TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 80, 80)}):Play()
+end)
+closeBtn.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+-- 🔘 Button Creator
+local function createButton(text, yPos, callback, isWhite)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.9, 0, 0, 42)
+	btn.Position = UDim2.new(0.05, 0, 0, yPos)
+	btn.Text = text
+	btn.Font = Enum.Font.FredokaOne
+	btn.TextSize = 17
+	btn.AutoButtonColor = false
+	btn.Parent = frame
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
+	local stroke = Instance.new("UIStroke", btn)
+
+	if isWhite then
+		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		btn.TextColor3 = Color3.fromRGB(40, 40, 40)
+		stroke.Color = Color3.fromRGB(180, 180, 180)
+	else
+		btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+		btn.TextColor3 = Color3.fromRGB(160, 200, 255)
+		stroke.Color = Color3.fromRGB(70, 110, 160)
+	end
+
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = isWhite and Color3.fromRGB(245, 245, 245) or Color3.fromRGB(60, 60, 75)
+		}):Play()
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = isWhite and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(40, 40, 50)
+		}):Play()
+	end)
+	btn.MouseButton1Down:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.05), {Position = btn.Position + UDim2.new(0, 0, 0, 2)}):Play()
+	end)
+	btn.MouseButton1Up:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.05), {Position = UDim2.new(0.05, 0, 0, yPos)}):Play()
+	end)
+	btn.MouseButton1Click:Connect(callback)
+
+	return btn
+end
+
+-- 🪪 Credit Label
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1, 0, 0, 20)
+credit.Position = UDim2.new(0, 0, 1, -22)
+credit.Text = "Tiktok: @yawiyawiyawiz1"
+credit.TextColor3 = Color3.fromRGB(120, 140, 170)
+credit.BackgroundTransparency = 1
+credit.Font = Enum.Font.Gotham
+credit.TextSize = 13
+
+-- 🔍 Mutation Machine
+local function findMachine()
+	for _, obj in pairs(Workspace:GetDescendants()) do
+		if obj:IsA("Model") and obj.Name:lower():find("mutation") then
+			return obj
+		end
+	end
+end
+
+local machine = findMachine()
+if not machine or not machine:FindFirstChildWhichIsA("BasePart") then
+	warn("Pet Mutation Machine not found.")
+	return
+end
+local basePart = machine:FindFirstChildWhichIsA("BasePart")
+
+-- 💡 ESP Label
+local espGui = Instance.new("BillboardGui", basePart)
+espGui.Name = "MutationESP"
+espGui.Adornee = basePart
+espGui.Size = UDim2.new(0, 200, 0, 40)
+espGui.StudsOffset = Vector3.new(0, 3.5, 0)
+espGui.AlwaysOnTop = true
+
+local espLabel = Instance.new("TextLabel", espGui)
+espLabel.Size = UDim2.new(1, 0, 1, 0)
+espLabel.BackgroundTransparency = 1
+espLabel.Font = Enum.Font.GothamBold
+espLabel.TextSize = 26
+espLabel.TextStrokeTransparency = 0.2
+espLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+espLabel.Text = currentMutation
+
+-- 🌈 Rainbow Animation
+local hue = 0
+RunService.RenderStepped:Connect(function()
+	if espVisible then
+		hue = (hue + 0.005) % 1
+		espLabel.TextColor3 = Color3.fromHSV(hue, 0.9, 1)
+	end
+end)
+
+-- 🎲 Reroll
+local canClick = true
+local function animateReroll()
+	if not canClick then return end
+	canClick = false
+	rerollBtn.Text = "Rerolling..."
+	for i = 1, 20 do
+		espLabel.Text = mutations[math.random(#mutations)]
+		wait(0.1)
+	end
+	currentMutation = mutations[math.random(#mutations)]
+	espLabel.Text = currentMutation
+	rerollBtn.Text = "Mutation Reroll"
+	wait(2)
+	canClick = true
+end
+
+-- 🚀 Auto Ascended
+local isRunning = false
+local function autoAscended()
+	if isRunning then return end
+	isRunning = true
+	autoBtn.Text = "Getting Ascended..."
+	local t = 0
+	while t < 40 do
+		currentMutation = mutations[math.random(#mutations - 1)]
+		espLabel.Text = currentMutation
+		wait(1)
+		t += 1
+	end
+	currentMutation = "Ascended"
+	espLabel.Text = currentMutation
+	autoBtn.Text = "🌟 ASCENDED FOUND!"
+	wait(2)
+	autoBtn.Text = "Auto Get Ascended"
+	isRunning = false
+end
+
+-- 🧪 Final Buttons
+rerollBtn = createButton("Mutation Reroll", 50, animateReroll, true) -- White style
+autoBtn = createButton("Auto Get Ascended", 105, autoAscended, false) -- Dark style
+
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
+-- SKIDDED BY SIGMA @rizzify101
