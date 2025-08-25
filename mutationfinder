@@ -124,7 +124,7 @@ end
 local credit = Instance.new("TextLabel", frame)
 credit.Size = UDim2.new(1, 0, 0, 20)
 credit.Position = UDim2.new(0, 0, 1, -22)
-credit.Text = "Tiktok: @yawiyawiyawiz1"
+credit.Text = "Tiktok: @dellinger.scripts"
 credit.TextColor3 = Color3.fromRGB(120, 140, 170)
 credit.BackgroundTransparency = 1
 credit.Font = Enum.Font.Gotham
